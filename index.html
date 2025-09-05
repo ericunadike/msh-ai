@@ -1719,8 +1719,8 @@
                 }
             }
 
-            // AI Analysis functionality
-            function performAIAnalysis(text, isVoice = false) {
+            // AI Analysis functionality with enhanced voice support
+            function performAIAnalysis(text, isVoice = false, metadata = null) {
                 if (!text || text.trim().length < 10) {
                     aiAnalysis.classList.remove('show');
                     return;
@@ -1728,13 +1728,29 @@
 
                 const analysis = aiVoiceAnalyzer.analyzeSentiment(text);
                 
-                // Show analysis indicator
-                const analysisText = `${isVoice ? '🎙️ Voice' : '💭 Text'} Analysis: ${analysis.sentiment} sentiment (${analysis.score}/5) - ${Math.round(analysis.confidence * 100)}% confidence`;
+                // Enhanced analysis display with confidence and service info
+                let analysisText = `${isVoice ? '🎙️ Voice' : '💭 Text'} Analysis: ${analysis.sentiment} sentiment (${analysis.score}/5)`;
+                
+                if (metadata?.confidence) {
+                    analysisText += ` - ${Math.round(metadata.confidence * 100)}% transcription confidence`;
+                }
+                
+                if (metadata?.service) {
+                    analysisText += ` via ${metadata.service}`;
+                }
+
                 aiAnalysis.innerHTML = `🤖 ${analysisText}`;
                 aiAnalysis.classList.add('show');
 
-                // Store analysis for email
-                aiAnalysis.dataset.analysis = JSON.stringify(analysis);
+                // Store enhanced analysis for email
+                const enhancedAnalysis = {
+                    ...analysis,
+                    transcriptionConfidence: metadata?.confidence || null,
+                    transcriptionService: metadata?.service || null,
+                    inputMethod: isVoice ? 'voice' : 'text'
+                };
+                
+                aiAnalysis.dataset.analysis = JSON.stringify(enhancedAnalysis);
             }
 
             // Text analysis on input
