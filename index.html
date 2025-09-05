@@ -18,6 +18,8 @@
             emailjs.init("Z0VMFmiXu1u4xRa9b");
         })();
     </script>
+    <!-- Vosk-browser for speech recognition -->
+    <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.5/dist/vosk.js"></script>
     <title>Patient Services - Magodo Specialist Hospital</title>
     <style>
         * {
@@ -662,9 +664,10 @@
         .voice-btn {
             position: absolute;
             right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: auto;
+            bottom: 12px;
+            transform: none;
+            background: linear-gradient(135deg, #27ae60 0%, #196f3d 100%);
             border: none;
             border-radius: 50%;
             width: 40px;
@@ -674,13 +677,13 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
             z-index: 10;
         }
 
         .voice-btn:hover {
-            transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
 
         .voice-btn.listening {
@@ -694,13 +697,13 @@
         }
 
         @keyframes voicePulse {
-            0%, 100% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.2); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         @keyframes voiceSpin {
-            from { transform: translateY(-50%) rotate(0deg); }
-            to { transform: translateY(-50%) rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .voice-icon {
@@ -1410,60 +1413,95 @@
         // AI Sentiment Analysis and Voice Recognition Class
         class AIVoiceAnalyzer {
             constructor() {
-                this.recognition = null;
+                this.model = null;
+                this.recognizer = null;
+                this.audioContext = null;
+                this.source = null;
+                this.recognizerNode = null;
                 this.isListening = false;
-                this.initSpeechRecognition();
+                this.isLoaded = false;
+                this.currentPartial = '';
+                this.initModel();
             }
 
-            initSpeechRecognition() {
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    this.recognition = new SpeechRecognition();
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
-                    this.recognition.lang = 'en-US';
-                    this.recognition.maxAlternatives = 1;
-                } else {
-                    console.warn('Speech recognition not supported in this browser');
-                }
-            }
-
-            async startListening(callback) {
-                if (!this.recognition) {
-                    callback('Speech recognition not supported', null);
-                    return;
-                }
-
-                this.isListening = true;
-                
-                this.recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    callback(null, transcript);
-                    this.isListening = false;
-                };
-
-                this.recognition.onerror = (event) => {
-                    callback(`Speech recognition error: ${event.error}`, null);
-                    this.isListening = false;
-                };
-
-                this.recognition.onend = () => {
-                    this.isListening = false;
-                };
-
+            async initModel() {
                 try {
-                    this.recognition.start();
-                } catch (error) {
-                    callback(`Failed to start speech recognition: ${error.message}`, null);
-                    this.isListening = false;
+                    this.model = await Vosk.createModel('https://alphacephei.com/kaldi/models/vosk-model-small-en-us-0.15.tar.gz');
+                    this.recognizer = new this.model.KaldiRecognizer();
+                    this.recognizer.on("partialresult", (message) => {
+                        const partial = message.result.partial;
+                        if (partial) {
+                            const currentText = commentsTextarea.value.replace(this.currentPartial, '').trim();
+                            commentsTextarea.value = `${currentText} ${partial}`.trim();
+                            this.currentPartial = partial;
+                        }
+                    });
+                    this.recognizer.on("result", (message) => {
+                        const text = message.result.text;
+                        if (text) {
+                            const currentText = commentsTextarea.value.replace(this.currentPartial, '').trim();
+                            commentsTextarea.value = `${currentText} ${text}`.trim();
+                            this.currentPartial = '';
+                        }
+                    });
+                    this.isLoaded = true;
+                } catch (e) {
+                    console.error('Failed to load Vosk model', e);
                 }
+            }
+
+            async startListening() {
+                if (!this.isLoaded) {
+                    return 'Model is loading, please wait...';
+                }
+                if (this.isListening) return;
+                this.isListening = true;
+                this.currentPartial = '';
+                try {
+                    const mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: false,
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            channelCount: 1,
+                            sampleRate: 16000
+                        },
+                    });
+                    this.audioContext = new AudioContext({ sampleRate: 16000 });
+                    this.recognizerNode = this.audioContext.createScriptProcessor(4096, 1, 1);
+                    this.recognizerNode.onaudioprocess = (event) => {
+                        if (this.isListening) {
+                            this.recognizer.acceptWaveform(event.inputBuffer);
+                        }
+                    };
+                    this.source = this.audioContext.createMediaStreamSource(mediaStream);
+                    this.source.connect(this.recognizerNode);
+                    this.recognizerNode.connect(this.audioContext.destination);
+                } catch (error) {
+                    this.isListening = false;
+                    console.error('Failed to start listening', error);
+                    return error.message;
+                }
+                return null;
             }
 
             stopListening() {
-                if (this.recognition && this.isListening) {
-                    this.recognition.stop();
-                    this.isListening = false;
+                if (!this.isListening) return;
+                this.isListening = false;
+                if (this.source) {
+                    this.source.disconnect();
+                    this.source = null;
                 }
+                if (this.recognizerNode) {
+                    this.recognizerNode.disconnect();
+                    this.recognizerNode = null;
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                // Flush final result
+                this.recognizer.acceptWaveform(new AudioBuffer({ length: 1, sampleRate: 16000, numberOfChannels: 1 }));
             }
 
             // Advanced sentiment analysis using pattern matching and lexicon
@@ -1645,40 +1683,20 @@
                 if (aiVoiceAnalyzer.isListening) {
                     aiVoiceAnalyzer.stopListening();
                     updateVoiceUI('idle');
+                    performAIAnalysis(commentsTextarea.value, true);
                 } else {
                     startVoiceRecognition();
                 }
             });
 
-            function startVoiceRecognition() {
+            async function startVoiceRecognition() {
+                updateVoiceUI('processing', 'Starting recognition...');
+                const error = await aiVoiceAnalyzer.startListening();
+                if (error) {
+                    updateVoiceUI('error', error);
+                    return;
+                }
                 updateVoiceUI('listening');
-                
-                aiVoiceAnalyzer.startListening((error, transcript) => {
-                    if (error) {
-                        console.error('Voice recognition error:', error);
-                        updateVoiceUI('error', 'Voice recognition failed');
-                        return;
-                    }
-
-                    if (transcript) {
-                        // Append to existing text or replace if empty
-                        const currentText = commentsTextarea.value.trim();
-                        const newText = currentText ? `${currentText} ${transcript}` : transcript;
-                        commentsTextarea.value = newText;
-                        
-                        updateVoiceUI('processing', 'Processing speech...');
-                        
-                        // Trigger AI analysis
-                        setTimeout(() => {
-                            performAIAnalysis(newText, true);
-                            updateVoiceUI('success', 'Speech processed!');
-                            
-                            setTimeout(() => {
-                                updateVoiceUI('idle');
-                            }, 2000);
-                        }, 1000);
-                    }
-                });
             }
 
             function updateVoiceUI(state, message = '') {
@@ -1694,7 +1712,7 @@
                         break;
                     case 'processing':
                         voiceBtn.classList.add('processing');
-                        voiceBtn.title = 'Processing speech...';
+                        voiceBtn.title = 'Processing...';
                         voiceStatus.textContent = message || 'Processing...';
                         voiceStatus.classList.add('show');
                         break;
