@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN9W0VL22Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-SN9W0VL22Y');
+    </script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("Z0VMFmiXu1u4xRa9b");
+        })();
+    </script>
+    <!-- Sentiment.js for client-side sentiment analysis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.0/sentiment.min.js"></script>
+    <title>Patient Services - Magodo Specialist Hospital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f6f5;
+            min-height: 100vh;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '🏥 ❤️ 😊 💚 🌟 ✨ 💫 🎉';
+            position: fixed;
+            top: -50px;
+            left: -100%;
+            font-size: 24px;
+            animation: float 25s linear infinite;
+            opacity: 0.1;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) rotate(0deg); }
+            100% { transform: translateX(200vw) rotate(360deg); }
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 16px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 
+                0 20px 60px rgba(255, 255, 255, 0.3),
+                0 10px 30px rgba(255, 255, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: translateY(60px) scale(0.3) rotate(-10deg); }
+            50% { opacity: 0.8; transform: translateY(-20px) scale(1.05) rotate(2deg); }
+            70% { opacity: 0.9; transform: translateY(10px) scale(0.98) rotate(-1deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        .hospital-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .hospital-icon {
+            width: 70px;
+            height: 70px;
+            background: transparent url('MSH LOGO.png') no-repeat center center;
+            background-size: contain;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.1),
+                0 0 0 8px rgba(0, 0, 0, 0.05);
+            animation: pulse 2s infinite, wiggle 3s infinite;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+
+        .hospital-icon::after {
+            content: '✨';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.5; transform: scale(1.2) rotate(180deg); }
+        }
+
+        .hospital-header h1 {
+            color: #000080;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .hospital-header p {
+            color: #57CAC3;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            background: rgba(152, 251, 152, 0.1);
+            padding: 6px;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(152, 251, 152, 0.15);
+        }
+
+        .tab-indicator {
+            position: absolute;
+            background: #27ae60;
+            border-radius: 16px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 20px rgba(152, 251, 152, 0.4),
+                0 0 0 2px rgba(255, 255, 255, 0.5);
+            width: 50%;
+            height: 52px;
+            left: 6px;
+            top: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #636e72;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 16px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-btn.active {
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn:not(.active):hover {
+            color: #27ae60;
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .tab-icon {
+            font-size: 18px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+        }
+
+        .tab-content {
+            display: none;
+            animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+             }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+             }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3436;
+            font-weight: 700;
+            font-size: 15px;
+            position: relative;
+        }
+
+        .required::after {
+            content: '*';
+            color: #e17055;
+            margin-left: 4px;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 3px solid #e9ecef;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #27ae60;
+            background: white;
+        }
+
+        .form-input:focus-visible {
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: #a0a0a0;
+            font-weight: 500;
+            font-size: 14px;
+            opacity: 1;
+        }
+
+        .form-input.error {
+            border-color: #e17055;
+            animation: shake 0.6s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px) rotate(-2deg); }
+            75% { transform: translateX(8px) rotate(2deg); }
+        }
+
+        .error-message {
+            color: #e17055;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .form-input.error + .error-message {
+            display: block;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 16px 36px 16px 18px;
+            border: 3px solid #e9ecef;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.9) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23636e72"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center;
+            background-size: 20px;
+            color: #2d3436;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+        }
+
+        .form-select:focus, .form-select:hover {
+            outline: none;
+            border-color: #27ae60;
+            background-color: white;
+        }
+
+        .form-select:focus-visible {
+            outline: none;
+        }
+
+        .form-select option {
+            background: white;
+            color: #2d3436;
+            padding: 12px;
+        }
+
+        .form-select option[value=""]:disabled {
+            color: #a0a0a0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .checkbox-group:hover {
+            background: rgba(152, 251, 152, 0.08);
+            border-color: rgba(152, 251, 152, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .custom-checkbox {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border: 3px solid #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            margin-top: 2px;
+        }
+
+        .custom-checkbox.checked {
+            background: #27ae60;
+            border-color: #27ae60;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            animation: checkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(0) rotate(180deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .checkbox-label {
+            color: #636e72;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            line-height: 1.5;
+            flex: 1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .payment-info {
+            background: rgba(152, 251, 152, 0.1);
+            border: 3px solid rgba(152, 251, 152, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+            position: relative;
+        }
+
+        .payment-info::before {
+            content: '💰';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            font-size: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .payment-info.show {
+            display: block;
+        }
+
+        .payment-info h4 {
+            color: #27ae60;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .payment-info p {
+            color: #636e72;
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .price-highlight {
+            color: #27ae60;
+            font-weight: 800;
+            background: rgba(152, 251, 152, 0.15);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 16px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            display: inline-block;
+        }
+
+        .question-section {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(152, 251, 152, 0.03);
+            border-radius: 20px;
+            border: 2px solid rgba(152, 251, 152, 0.1);
+        }
+
+        .question-title {
+            color: #2d3436;
+            margin-bottom: 16px;
+            font-size: 17px;
+            font-weight: 800;
+            text-align: center;
+            position: relative;
+            padding-bottom: 12px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .question-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #27ae60;
+            border-radius: 2px;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(152, 251, 152, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(152, 251, 152, 0.6); }
+        }
+
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 0 -8px 12px -8px;
+        }
+
+        .rating-option {
+            aspect-ratio: auto;
+            border: 3px solid #e9ecef;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            position: relative;
+            overflow: visible;
+            min-height: 70px;
+            max-height: 70px;
+        }
+
+        .rating-option:hover {
+            transform: translateY(-3px) scale(1.03) rotate(1deg);
+            box-shadow: 0 8px 25px rgba(152, 251, 152, 0.25);
+            border-color: #27ae60;
+        }
+
+        .rating-option.selected {
+            border-color: #27ae60;
+            border-width: 4px;
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .rating-emoji {
+            font-size: 22px;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .rating-option.selected .rating-emoji {
+            transform: scale(1.1);
+            animation: celebrate 0.6s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(-5deg); }
+            50% { transform: scale(1.05) rotate(3deg); }
+            100% { transform: scale(1.1) rotate(0deg); }
+        }
+
+        .rating-label {
+            font-size: 11px;
+            color: #636e72;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.1;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            padding: 0 2px;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .rating-option.selected .rating-label {
+            color: #27ae60;
+            font-weight: 800;
+        }
+
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #a0a0a0;
+            font-weight: 600;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .comment-section {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .comment-section label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3436;
+            font-weight: 700;
+            font-size: 15px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .comment-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .comment-input, .comment-textarea {
+            width: 100%;
+            padding: 16px 60px 16px 18px;
+            border: 3px solid #e9ecef;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+            backdrop-filter: blur(10px);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            resize: none;
+        }
+
+        .comment-textarea {
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 16px;
+        }
+
+        .comment-input:focus, .comment-textarea:focus {
+            outline: none;
+            border-color: #27ae60;
+            background: white;
+        }
+
+        .comment-input::placeholder, .comment-textarea::placeholder {
+            color: #a0a0a0;
+            font-weight: 500;
+            font-size: 14px;
+            opacity: 1;
+        }
+
+        .voice-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 10;
+        }
+
+        .voice-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .voice-btn.listening {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            animation: voicePulse 1s infinite;
+        }
+
+        .voice-btn.processing {
+            background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+            animation: voiceSpin 2s linear infinite;
+        }
+
+        @keyframes voicePulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+
+        @keyframes voiceSpin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .voice-icon {
+            color: white;
+            font-size: 18px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+        }
+
+        .voice-status {
+            position: absolute;
+            bottom: -25px;
+            right: 0;
+            font-size: 11px;
+            color: #667eea;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .voice-status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ai-analysis-indicator {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+            position: relative;
+        }
+
+        .ai-analysis-indicator.show {
+            display: block;
+        }
+
+        .ai-analysis-indicator::before {
+            content: '🤖';
+            margin-right: 8px;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 30px rgba(152, 251, 152, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 15px 40px rgba(152, 251, 152, 0.5),
+                0 0 0 4px rgba(152, 251, 152, 0.2);
+            animation: buttonPulse 0.6s ease-out;
+        }
+
+        @keyframes buttonPulse {
+            0% { transform: translateY(-4px) scale(1.02); }
+            50% { transform: translateY(-6px) scale(1.05); }
+            100% { transform: translateY(-4px) scale(1.02); }
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            animation: none;
+        }
+
+        .submit-btn:disabled::before {
+            display: none;
+        }
+
+        .thank-you, .registration-success {
+            display: none;
+            text-align: center;
+            padding: 32px 16px;
+            animation: celebrationPop 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes celebrationPop {
+            0% { opacity: 0; transform: scale(0.3) rotate(-180deg); }
+            50% { opacity: 0.8; transform: scale(1.1) rotate(10deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .success-icon, .success-animation {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #27ae60;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: successBounce 2s infinite;
+        }
+
+        .success-icon::after {
+            content: '✓';
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        @keyframes successBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .thank-you h2, .registration-success h2 {
+            color: #27ae60;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .thank-you p, .registration-success p {
+            color: #636e72;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="hospital-header">
+            <div class="hospital-icon"></div>
+            <h1>Magodo Specialist Hospital</h1>
+            <p>Patient Services</p>
+        </div>
+
+        <div class="tab-navigation">
+            <div class="tab-indicator"></div>
+            <button class="tab-btn active" data-tab="registration"><span class="tab-icon">📝</span> Registration</button>
+            <button class="tab-btn" data-tab="feedback"><span class="tab-icon">⭐</span> Feedback</button>
+        </div>
+
+        <div class="tab-content active" id="registration">
+            <form id="registration-form">
+                <div class="form-group">
+                    <label class="required">Full Name</label>
+                    <input type="text" class="form-input" name="name" placeholder="Enter your full name">
+                    <span class="error-message">Please enter your name</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Email</label>
+                        <input type="email" class="form-input" name="email" placeholder="your.email@example.com">
+                        <span class="error-message">Please enter a valid email</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Phone Number</label>
+                        <input type="tel" class="form-input" name="phone" placeholder="08012345678">
+                        <span class="error-message">Please enter your phone number</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Department</label>
+                    <select class="form-select" name="department">
+                        <option value="" disabled selected>Select department</option>
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Surgery">Surgery</option>
+                        <option value="Dentistry">Dentistry</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span class="error-message">Please select a department</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="payment" name="payment" style="display:none;">
+                    <label for="payment" class="custom-checkbox"></label>
+                    <label for="payment" class="checkbox-label">I agree to pay the consultation fee of ₦5,000 upon arrival</label>
+                </div>
+
+                <div class="payment-info">
+                    <h4>Payment Details</h4>
+                    <p>Please note that the consultation fee is <span class="price-highlight">₦5,000</span> payable at the hospital.</p>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" disabled>Register Now</button>
+                </div>
+            </form>
+
+            <div class="registration-success">
+                <div class="success-animation"></div>
+                <h2>Registration Successful! 🎉</h2>
+                <p>Thank you for registering. We'll see you soon!</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="feedback">
+            <form id="feedback-form">
+                <div class="question-section">
+                    <h3 class="question-title">How would you rate your overall experience?</h3>
+                    <div class="rating-grid">
+                        <div class="rating-option" data-rating="1">
+                            <span class="rating-emoji">😡</span>
+                            <span class="rating-label">Very Poor</span>
+                        </div>
+                        <div class="rating-option" data-rating="2">
+                            <span class="rating-emoji">😞</span>
+                            <span class="rating-label">Poor</span>
+                        </div>
+                        <div class="rating-option" data-rating="3">
+                            <span class="rating-emoji">😐</span>
+                            <span class="rating-label">Average</span>
+                        </div>
+                        <div class="rating-option" data-rating="4">
+                            <span class="rating-emoji">😊</span>
+                            <span class="rating-label">Good</span>
+                        </div>
+                        <div class="rating-option" data-rating="5">
+                            <span class="rating-emoji">🤩</span>
+                            <span class="rating-label">Excellent</span>
+                        </div>
+                    </div>
+                    <div class="rating-scale">
+                        <span>Very Poor</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+
+                <div class="comment-section">
+                    <label>Share Your Experience</label>
+                    <div class="comment-input-wrapper">
+                        <textarea class="comment-textarea" name="comment" placeholder="Tell us about your visit..."></textarea>
+                        <button class="voice-btn" id="voice-btn">
+                            <span class="voice-icon">🎤</span>
+                        </button>
+                        <span class="voice-status"></span>
+                    </div>
+                    <div class="ai-analysis-indicator">AI analyzing sentiment...</div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" disabled>Submit Feedback</button>
+                </div>
+            </form>
+
+            <div class="thank-you">
+                <div class="success-icon"></div>
+                <h2>Thank You! ❤️</h2>
+                <p>Your feedback helps us improve our services.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const tabIndicator = document.querySelector('.tab-indicator');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.getElementById(tab).classList.add('active');
+
+                if (btn === tabBtns[0]) {
+                    tabIndicator.style.left = '6px';
+                } else {
+                    tabIndicator.style.left = 'calc(50% + 6px)';
+                }
+            });
+        });
+
+        // Registration form
+        const regForm = document.getElementById('registration-form');
+        const paymentCheckbox = document.getElementById('payment');
+        const customCheckbox = document.querySelector('.custom-checkbox');
+        const paymentInfo = document.querySelector('.payment-info');
+        const regSubmitBtn = regForm.querySelector('.submit-btn');
+        const registrationSuccess = document.querySelector('.registration-success');
+
+        customCheckbox.addEventListener('click', () => {
+            paymentCheckbox.checked = !paymentCheckbox.checked;
+            customCheckbox.classList.toggle('checked');
+            paymentInfo.classList.toggle('show');
+            regSubmitBtn.disabled = !paymentCheckbox.checked;
+        });
+
+        regForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(regForm);
+            let valid = true;
+
+            // Validation
+            ['name', 'email', 'phone', 'department'].forEach(field => {
+                const input = regForm.querySelector(`[name="${field}"]`);
+                const error = input.nextElementSibling;
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    valid = false;
+                } else {
+                    input.classList.remove('error');
+                }
+                if (field === 'email' && input.value && !/\S+@\S+\.\S+/.test(input.value)) {
+                    input.classList.add('error');
+                    valid = false;
+                }
+            });
+
+            if (!valid || !paymentCheckbox.checked) return;
+
+            // Send email (replace with your EmailJS service and template IDs)
+            const params = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                department: formData.get('department'),
+                payment_agreed: paymentCheckbox.checked ? 'Yes' : 'No'
+            };
+
+            emailjs.send('your_service_id', 'your_registration_template_id', params)
+                .then(() => {
+                    regForm.style.display = 'none';
+                    registrationSuccess.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('EmailJS error:', error);
+                    alert('Failed to send registration. Please try again.');
+                });
+        });
+
+        // Feedback form
+        const feedbackForm = document.getElementById('feedback-form');
+        const ratingOptions = document.querySelectorAll('.rating-option');
+        const commentTextarea = document.querySelector('.comment-textarea');
+        const voiceBtn = document.getElementById('voice-btn');
+        const voiceStatus = document.querySelector('.voice-status');
+        const aiIndicator = document.querySelector('.ai-analysis-indicator');
+        const feedbackSubmitBtn = feedbackForm.querySelector('.submit-btn');
+        const thankYou = document.querySelector('.thank-you');
+
+        let selectedRating = 0;
+        let isListening = false;
+        const sentiment = new Sentiment();
+
+        ratingOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                ratingOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedRating = option.dataset.rating;
+                checkFeedbackSubmitEnabled();
+            });
+        });
+
+        function checkFeedbackSubmitEnabled() {
+            feedbackSubmitBtn.disabled = selectedRating === 0;
+        }
+
+        // Voice recognition
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                voiceBtn.classList.add('listening');
+                voiceStatus.textContent = 'Listening...';
+                voiceStatus.classList.add('show');
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('listening');
+                voiceStatus.classList.remove('show');
+                isListening = false;
+                analyzeSentiment();
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                commentTextarea.value += (commentTextarea.value ? ' ' : '') + transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                voiceStatus.textContent = 'Error: ' + event.error;
+            };
+
+            voiceBtn.addEventListener('click', () => {
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                    isListening = true;
+                }
+            });
+        } else {
+            voiceBtn.style.display = 'none'; // Hide if not supported
+        }
+
+        // Sentiment analysis
+        function analyzeSentiment() {
+            if (!commentTextarea.value.trim()) return;
+
+            aiIndicator.classList.add('show');
+            aiIndicator.textContent = '🤖 AI analyzing sentiment...';
+
+            // Simulate delay for UX
+            setTimeout(() => {
+                const analysis = sentiment.analyze(commentTextarea.value);
+                const sentimentText = `Sentiment Analysis: Score=${analysis.score}, Positive words: ${analysis.positive.join(', ')}, Negative words: ${analysis.negative.join(', ')}`;
+                aiIndicator.textContent = '🤖 ' + sentimentText;
+            }, 1000);
+        }
+
+        commentTextarea.addEventListener('blur', analyzeSentiment);
+
+        feedbackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (selectedRating === 0) return;
+
+            const analysis = sentiment.analyze(commentTextarea.value);
+            const sentimentText = `Score: ${analysis.score} (Positive: ${analysis.positive.join(', ')}; Negative: ${analysis.negative.join(', ')})`;
+
+            // Send email (replace with your EmailJS service and template IDs)
+            const params = {
+                rating: selectedRating,
+                comment: commentTextarea.value,
+                sentiment_analysis: sentimentText
+            };
+
+            emailjs.send('your_service_id', 'your_feedback_template_id', params)
+                .then(() => {
+                    feedbackForm.style.display = 'none';
+                    thankYou.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('EmailJS error:', error);
+                    alert('Failed to send feedback. Please try again.');
+                });
+        });
+    </script>
+</body>
+  </html>
