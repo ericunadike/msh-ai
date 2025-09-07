@@ -18,8 +18,8 @@
             emailjs.init("Z0VMFmiXu1u4xRa9b");
         })();
     </script>
-    <!-- Sentiment.js for client-side sentiment analysis -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.0/sentiment.min.js"></script>
+    <!-- Vosk-browser for speech recognition -->
+    <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.5/dist/vosk.js"></script>
     <title>Patient Services - Magodo Specialist Hospital</title>
     <style>
         * {
@@ -663,9 +663,11 @@
 
         .voice-btn {
             position: absolute;
-            right: 15px;
-            top: 20px;
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            right: 12px;
+            top: auto;
+            bottom: 12px;
+            transform: none;
+            background: linear-gradient(135deg, #27ae60 0%, #196f3d 100%);
             border: none;
             border-radius: 50%;
             width: 40px;
@@ -679,31 +681,24 @@
             z-index: 10;
         }
 
-        .voice-btn:hover:not(:disabled) {
+        .voice-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
 
         .voice-btn.listening {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             animation: voicePulse 1s infinite;
         }
 
         .voice-btn.processing {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
             animation: voiceSpin 2s linear infinite;
-        }
-
-        .voice-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #bdc3c7;
-            box-shadow: none;
         }
 
         @keyframes voicePulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.2); }
         }
 
         @keyframes voiceSpin {
@@ -715,9 +710,6 @@
             color: white;
             font-size: 18px;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
         }
 
         .voice-status {
@@ -725,26 +717,17 @@
             bottom: -25px;
             right: 0;
             font-size: 11px;
-            color: #27ae60;
+            color: #667eea;
             font-weight: 600;
             opacity: 0;
             transform: translateY(5px);
             transition: all 0.3s ease;
             pointer-events: none;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(39, 174, 96, 0.2);
         }
 
         .voice-status.show {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        .voice-status.error {
-            color: #e74c3c;
-            border-color: rgba(231, 76, 60, 0.2);
         }
 
         .ai-analysis-indicator {
@@ -866,25 +849,21 @@
             align-items: center;
             justify-content: center;
             animation: successBounce 2s infinite;
-        }
-
-        .success-icon::after {
-            content: '✓';
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-        }
-
-        .success-animation::after {
-            content: '🎉';
-            font-size: 32px;
-            animation: rotate 2s linear infinite;
+            box-shadow: 
+                0 10px 40px rgba(152, 251, 152, 0.4),
+                0 0 0 8px rgba(152, 251, 152, 0.1);
         }
 
         @keyframes successBounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-15px) scale(1.1); }
+            60% { transform: translateY(-8px) scale(1.05); }
+        }
+
+        .success-icon::after, .success-animation::after {
+            content: '🎉';
+            font-size: 32px;
+            animation: rotate 2s linear infinite;
         }
 
         @keyframes rotate {
@@ -894,17 +873,29 @@
 
         .thank-you h2, .registration-success h2 {
             color: #27ae60;
+            margin-bottom: 16px;
             font-size: 24px;
             font-weight: 800;
-            margin-bottom: 12px;
+            animation: textPop 1s ease-out 0.5s both;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        @keyframes textPop {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .thank-you p, .registration-success p {
             color: #636e72;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
+            line-height: 1.6;
             max-width: 320px;
             margin: 0 auto;
+            animation: textPop 1s ease-out 0.7s both;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         @media (max-width: 480px) {
@@ -918,146 +909,142 @@
                 margin: 2px;
                 max-width: calc(100vw - 4px);
             }
-
+            
             .hospital-header h1 {
                 font-size: 18px;
-            }
-
+             }
+            
             .hospital-icon {
                 width: 60px;
                 height: 60px;
                 margin-bottom: 8px;
             }
-
+            
             .tab-btn {
                 padding: 12px 6px;
                 font-size: 11px;
                 gap: 4px;
             }
-
+            
             .tab-indicator {
                 height: 44px;
             }
-
+            
             .tab-icon {
                 font-size: 16px;
-            }
-
+             }
+            
             .form-row {
                 grid-template-columns: 1fr;
                 gap: 10px;
-            }
-
+             }
+            
             .question-title {
                 font-size: 15px;
-            }
-
+             }
+            
             .rating-grid {
                 gap: 4px;
                 margin: 0 -4px 10px -4px;
             }
-
+            
             .rating-option {
                 padding: 6px 4px;
                 border-radius: 14px;
                 min-height: 60px;
                 max-height: 60px;
             }
-
+            
             .rating-emoji {
-                font-size: 22px;
+                font-size: 20px;
                 margin-bottom: 2px;
             }
-
+            
             .rating-label {
                 font-size: 8px;
                 line-height: 1.0;
                 padding: 0 2px;
             }
-
+            
             .comment-textarea {
                 min-height: 80px;
                 padding: 14px 50px 14px 14px;
-                margin-bottom: 12px;
-                font-size: 14px;
+                font-size: 16px;
             }
-
+            
             .comment-input {
-                padding: 14px;
-                margin-bottom: 12px;
-                font-size: 14px;
+                padding: 14px 50px 14px 14px;
+                font-size: 16px;
             }
 
             .voice-btn {
-                width: 36px;
-                height: 36px;
-                right: 12px;
-                top: 16px;
+                width: 35px;
+                height: 35px;
+                right: 10px;
             }
 
             .voice-icon {
                 font-size: 16px;
-                width: 16px;
-                height: 16px;
             }
-
+            
             .submit-btn {
                 padding: 16px 20px;
                 font-size: 14px;
                 border-radius: 18px;
             }
-
+            
             .payment-info {
                 padding: 14px;
                 border-radius: 16px;
             }
-
+            
             .question-section {
                 padding: 12px;
                 border-radius: 16px;
                 margin-bottom: 16px;
             }
-
+            
             .success-icon, .success-animation {
                 width: 70px;
                 height: 70px;
             }
-
-            .success-icon::after {
+            
+            .success-icon::after, .success-animation::after {
                 font-size: 28px;
             }
-
+            
             .thank-you h2, .registration-success h2 {
                 font-size: 20px;
             }
-
+            
             .form-input, .form-select {
-                font-size: 14px;
+                font-size: 16px;
                 padding: 14px 32px 14px 16px;
             }
-
+            
             .form-select {
                 background-position: right 10px center;
                 background-size: 18px;
             }
-
-            .form-input::placeholder, .comment-input::placeholder, .comment-textarea::placeholder {
-                font-size: 13px;
+            
+            input[type="date"] {
+                padding: 14px 16px !important;
+                font-size: 16px !important;
             }
 
             .rating-scale {
                 font-size: 10px;
                 margin-top: 8px;
             }
-
+            
             .form-group label {
                 font-size: 14px;
             }
-
+            
             .checkbox-label {
                 font-size: 14px;
             }
-
+            
             .payment-info p {
                 font-size: 14px;
             }
@@ -1067,58 +1054,54 @@
             .main-container {
                 padding: 10px;
             }
-
+            
             .hospital-header h1 {
                 font-size: 16px;
             }
-
+            
             .tab-btn {
                 padding: 10px 4px;
                 font-size: 10px;
                 gap: 2px;
             }
-
+            
             .tab-indicator {
                 height: 40px;
             }
-
+            
             .rating-grid {
                 gap: 2px;
                 margin: 0 -2px 8px -2px;
             }
-
+            
             .rating-option {
                 padding: 4px;
                 border-radius: 12px;
                 min-height: 50px;
                 max-height: 50px;
             }
-
+            
             .rating-emoji {
-                font-size: 20px;
+                font-size: 18px;
             }
-
+            
             .rating-label {
                 font-size: 7px;
                 padding: 0 1px;
             }
-
+            
             .rating-scale {
                 font-size: 9px;
             }
-
-            .form-input::placeholder, .comment-input::placeholder, .comment-textarea::placeholder {
-                font-size: 12px;
-            }
-
+            
             .question-title {
                 font-size: 14px;
             }
-
+            
             .form-group label {
                 font-size: 13px;
             }
-
+            
             .form-select {
                 padding-right: 30px;
                 background-position: right 8px center;
@@ -1128,23 +1111,21 @@
             .voice-btn {
                 width: 32px;
                 height: 32px;
-                right: 10px;
-                top: 14px;
             }
 
             .voice-icon {
-                width: 14px;
-                height: 14px;
+                font-size: 14px;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .hospital-icon, .success-animation, .success-icon, .submit-btn::before, 
-            body::before, .hospital-icon::after, .tab-indicator, .custom-checkbox, 
-            .rating-option, .voice-btn {
+            .hospital-icon, .success-animation, .submit-btn::before, 
+            .success-icon, body::before, .hospital-icon::after,
+            .tab-indicator, .custom-checkbox, .rating-option,
+            .voice-btn {
                 animation: none !important;
             }
-
+            
             * {
                 transition-duration: 0.1s !important;
             }
@@ -1159,22 +1140,15 @@
             outline-offset: 2px;
         }
 
-        .voice-unsupported {
-            display: none;
-            background: rgba(231, 76, 60, 0.1);
-            border: 2px solid rgba(231, 76, 60, 0.2);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 8px;
-            font-size: 13px;
-            color: #e74c3c;
-            font-weight: 600;
-            text-align: center;
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .voice-unsupported.show {
-            display: block;
-            animation: fadeInUp 0.5s ease-out;
+        @keyframes sparkleFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(0.5); }
         }
     </style>
 </head>
@@ -1183,17 +1157,23 @@
         <div class="hospital-header">
             <div class="hospital-icon"></div>
             <h1>Magodo Specialist Hospital</h1>
-            <p>Patient Services</p>
+            <p>You are amazing!</p>
         </div>
 
         <div class="tab-navigation">
-            <div class="tab-indicator"></div>
-            <button class="tab-btn active" data-tab="feedback"><span class="tab-icon">💬</span> Feedback</button>
-            <button class="tab-btn" data-tab="registration"><span class="tab-icon">👤</span> Register</button>
+            <div class="tab-indicator" id="tabIndicator"></div>
+            <button class="tab-btn active" data-tab="feedback">
+                <span class="tab-icon">💬</span>
+                Feedback
+            </button>
+            <button class="tab-btn" data-tab="registration">
+                <span class="tab-icon">👤</span>
+                Register
+            </button>
         </div>
 
         <div class="tab-content active" id="feedbackTab">
-            <form id="surveyForm">
+            <div class="survey-form" id="surveyForm">
                 <div class="question-section">
                     <h3 class="question-title">How satisfied are you with our care?</h3>
                     <div class="rating-grid" id="satisfactionRating">
@@ -1256,40 +1236,37 @@
 
                 <div class="comment-section">
                     <label for="patientName">Your Name (Optional)</label>
-                    <input type="text" id="patientName" class="comment-input" placeholder="What should we call you?">
+                    <input type="text" id="patientName" class="comment-input" placeholder="What should we call you?" />
                 </div>
 
                 <div class="comment-section">
                     <label for="patientContact">Email or Phone (Optional)</label>
-                    <input type="text" id="patientContact" class="comment-input" placeholder="email@example.com or +234 801 234 5678">
+                    <input type="text" id="patientContact" class="comment-input" placeholder="email@example.com or +234 801 234 5678" />
                 </div>
 
                 <div class="comment-section">
-                    <label for="comments">Share Your Experience</label>
+                    <label for="comments">Share your experience!</label>
                     <div class="comment-input-wrapper">
-                        <textarea id="comments" class="comment-textarea" placeholder="Tell us about your visit - we love hearing from you! Share what made you smile or how we can improve..."></textarea>
-                        <button type="button" class="voice-btn" id="voiceBtn">
-                            <svg class="voice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z" fill="currentColor"/>
-                                <path d="M19 10V12C19 16.42 15.42 20 11 20H9V22H11C16.52 22 21 17.52 21 12V10H19Z" fill="currentColor"/>
-                                <path d="M7 12V10H5V12C5 17.52 9.48 22 15 22H17V20H15C10.58 20 7 16.42 7 12Z" fill="currentColor"/>
-                            </svg>
+                        <textarea id="comments" class="comment-textarea" placeholder="Tell us about your visit - we love hearing from you! Share what made you smile or how we can improve..." rows="4"></textarea>
+                        <button type="button" class="voice-btn" id="voiceBtn" title="Click to speak">
+                            <span class="voice-icon">🎤</span>
                         </button>
-                        <span class="voice-status"></span>
+                        <div class="voice-status" id="voiceStatus"></div>
                     </div>
-                    <div class="ai-analysis-indicator">AI analyzing sentiment...</div>
-                    <div class="voice-unsupported">Voice input not supported in this browser. Please use Chrome, Edge, or Safari for voice features.</div>
+                    <div class="ai-analysis-indicator" id="aiAnalysis">
+                        AI is analyzing your feedback sentiment...
+                    </div>
                 </div>
 
                 <div class="submit-section">
                     <button type="submit" class="submit-btn" id="submitBtn" disabled>Send Feedback 🚀</button>
                 </div>
-            </form>
+            </div>
 
             <div class="thank-you" id="thankYou">
                 <div class="success-icon"></div>
-                <h2>Thank You! ❤️</h2>
-                <p>Your feedback helps us improve our services.</p>
+                <h2>Amazing! Thank You! 🎉</h2>
+                <p>Your feedback means the world to us! We're constantly working to make your healthcare experience even better. You rock! 💪</p>
             </div>
         </div>
 
@@ -1433,11 +1410,258 @@
     </div>
 
     <script>
+        // AI Sentiment Analysis and Voice Recognition Class
+        class AIVoiceAnalyzer {
+            constructor() {
+                this.model = null;
+                this.recognizer = null;
+                this.audioContext = null;
+                this.source = null;
+                this.recognizerNode = null;
+                this.isListening = false;
+                this.isLoaded = false;
+                this.currentPartial = '';
+                this.initModel();
+            }
+
+            async initModel() {
+                try {
+                    this.model = await Vosk.createModel('https://alphacephei.com/kaldi/models/vosk-model-small-en-us-0.15.tar.gz');
+                    this.recognizer = new this.model.KaldiRecognizer();
+                    this.recognizer.on("partialresult", (message) => {
+                        const partial = message.result.partial;
+                        if (partial) {
+                            const currentText = commentsTextarea.value.replace(this.currentPartial, '').trim();
+                            commentsTextarea.value = `${currentText} ${partial}`.trim();
+                            this.currentPartial = partial;
+                        }
+                    });
+                    this.recognizer.on("result", (message) => {
+                        const text = message.result.text;
+                        if (text) {
+                            const currentText = commentsTextarea.value.replace(this.currentPartial, '').trim();
+                            commentsTextarea.value = `${currentText} ${text}`.trim();
+                            this.currentPartial = '';
+                        }
+                    });
+                    this.isLoaded = true;
+                } catch (e) {
+                    console.error('Failed to load Vosk model', e);
+                }
+            }
+
+            async startListening() {
+                if (!this.isLoaded) {
+                    return 'Model is loading, please wait...';
+                }
+                if (this.isListening) return;
+                this.isListening = true;
+                this.currentPartial = '';
+                try {
+                    const mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: false,
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            channelCount: 1,
+                            sampleRate: 16000
+                        },
+                    });
+                    this.audioContext = new AudioContext({ sampleRate: 16000 });
+                    this.recognizerNode = this.audioContext.createScriptProcessor(4096, 1, 1);
+                    this.recognizerNode.onaudioprocess = (event) => {
+                        if (this.isListening) {
+                            this.recognizer.acceptWaveform(event.inputBuffer);
+                        }
+                    };
+                    this.source = this.audioContext.createMediaStreamSource(mediaStream);
+                    this.source.connect(this.recognizerNode);
+                    this.recognizerNode.connect(this.audioContext.destination);
+                } catch (error) {
+                    this.isListening = false;
+                    console.error('Failed to start listening', error);
+                    return error.message;
+                }
+                return null;
+            }
+
+            stopListening() {
+                if (!this.isListening) return;
+                this.isListening = false;
+                if (this.source) {
+                    this.source.disconnect();
+                    this.source = null;
+                }
+                if (this.recognizerNode) {
+                    this.recognizerNode.disconnect();
+                    this.recognizerNode = null;
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                // Flush final result
+                this.recognizer.acceptWaveform(new AudioBuffer({ length: 1, sampleRate: 16000, numberOfChannels: 1 }));
+            }
+
+            // Advanced sentiment analysis using pattern matching and lexicon
+            analyzeSentiment(text) {
+                if (!text || text.trim().length === 0) {
+                    return {
+                        score: 3,
+                        sentiment: 'neutral',
+                        confidence: 0.5,
+                        emotions: {},
+                        keywords: [],
+                        issues: [],
+                        positives: [],
+                        intensity: 'medium'
+                    };
+                }
+
+                const lowerText = text.toLowerCase();
+                
+                // Enhanced emotion lexicons with weights
+                const emotionLexicons = {
+                    positive: {
+                        'excellent': 5, 'outstanding': 5, 'exceptional': 5, 'amazing': 5, 'perfect': 5,
+                        'superb': 5, 'flawless': 5, 'incredible': 5, 'phenomenal': 5, 'brilliant': 5,
+                        'wonderful': 4.5, 'fantastic': 4.5, 'great': 4, 'awesome': 4.5, 'marvelous': 4.5,
+                        'professional': 4, 'compassionate': 4.5, 'caring': 4.5, 'empathetic': 4.5,
+                        'helpful': 4, 'friendly': 4, 'courteous': 4, 'respectful': 4.5, 'kind': 4,
+                        'good': 3.5, 'nice': 3.5, 'pleasant': 3.5, 'satisfied': 4, 'pleased': 4,
+                        'grateful': 4.5, 'thankful': 4.5, 'blessed': 4.5, 'recommend': 4,
+                        'love': 4.5, 'appreciate': 4, 'impressed': 4, 'comfortable': 3.5
+                    },
+                    negative: {
+                        'terrible': 1, 'awful': 1, 'horrible': 1, 'worst': 1, 'disgusting': 1,
+                        'appalling': 1, 'outrageous': 1, 'unacceptable': 1, 'shocking': 1,
+                        'nightmare': 1, 'disaster': 1, 'pathetic': 1, 'useless': 1, 'incompetent': 1,
+                        'rude': 1.5, 'disrespectful': 1.5, 'unprofessional': 1.5, 'dismissive': 1.5,
+                        'bad': 2, 'poor': 2, 'disappointing': 2, 'unsatisfactory': 2, 'inadequate': 2,
+                        'frustrated': 2.5, 'annoyed': 2.5, 'upset': 2, 'dissatisfied': 2, 'unhappy': 2,
+                        'uncomfortable': 2.5, 'confused': 2.5, 'worried': 2.5, 'concerned': 2.5,
+                        'slow': 2.5, 'delayed': 2.5, 'waiting': 2.5, 'expensive': 2.5, 'costly': 2.5
+                    }
+                };
+
+                // Context-aware patterns for healthcare
+                const contextPatterns = {
+                    medical_quality: [
+                        { pattern: /misdiagnosed|wrong.*diagnosis|missed.*diagnosis/i, score: 1, weight: 2 },
+                        { pattern: /medical.*error|mistake.*made|wrong.*medication/i, score: 1, weight: 2 },
+                        { pattern: /excellent.*care|outstanding.*treatment|professional.*service/i, score: 5, weight: 2 },
+                        { pattern: /knowledgeable.*staff|experienced.*doctor|skilled.*nurse/i, score: 4.5, weight: 1.5 }
+                    ],
+                    service_quality: [
+                        { pattern: /never.*again|won't.*back|not.*returning/i, score: 1, weight: 2 },
+                        { pattern: /wouldn't.*recommend|can't.*recommend|advise.*against/i, score: 1.5, weight: 1.5 },
+                        { pattern: /highly.*recommend|definitely.*recommend|tell.*everyone/i, score: 5, weight: 2 },
+                        { pattern: /staff.*rude|nurse.*rude|doctor.*dismissive/i, score: 1.5, weight: 1.5 }
+                    ],
+                    wait_times: [
+                        { pattern: /waited.*hours|waiting.*forever|endless.*wait/i, score: 2, weight: 1 },
+                        { pattern: /quick.*service|no.*waiting|seen.*immediately/i, score: 4.5, weight: 1 },
+                        { pattern: /emergency.*wait|urgent.*delay|critical.*delay/i, score: 1.5, weight: 1.5 }
+                    ],
+                    facility: [
+                        { pattern: /dirty.*room|unclean.*facility|unsanitary/i, score: 1.5, weight: 1.5 },
+                        { pattern: /clean.*facility|spotless|well.*maintained/i, score: 4.5, weight: 1 },
+                        { pattern: /comfortable.*room|nice.*atmosphere|welcoming.*environment/i, score: 4, weight: 1 }
+                    ]
+                };
+
+                let totalScore = 0;
+                let weightSum = 0;
+                let emotions = { positive: 0, negative: 0, neutral: 0 };
+                let foundKeywords = [];
+                let issues = [];
+                let positives = [];
+
+                // Analyze individual words
+                Object.keys(emotionLexicons.positive).forEach(word => {
+                    if (lowerText.includes(word)) {
+                        const score = emotionLexicons.positive[word];
+                        totalScore += score;
+                        weightSum += 1;
+                        emotions.positive += score;
+                        foundKeywords.push(word);
+                        positives.push(word);
+                    }
+                });
+
+                Object.keys(emotionLexicons.negative).forEach(word => {
+                    if (lowerText.includes(word)) {
+                        const score = emotionLexicons.negative[word];
+                        totalScore += score;
+                        weightSum += 1;
+                        emotions.negative += (5 - score);
+                        foundKeywords.push(word);
+                        if (score <= 2) {
+                            issues.push(word);
+                        }
+                    }
+                });
+
+                // Analyze contextual patterns
+                Object.values(contextPatterns).forEach(patterns => {
+                    patterns.forEach(pattern => {
+                        if (pattern.pattern.test(text)) {
+                            totalScore += pattern.score * pattern.weight;
+                            weightSum += pattern.weight;
+                            
+                            if (pattern.score <= 2.5) {
+                                issues.push(pattern.pattern.source);
+                            } else if (pattern.score >= 4) {
+                                positives.push(pattern.pattern.source);
+                            }
+                        }
+                    });
+                });
+
+                // Calculate final metrics
+                const averageScore = weightSum > 0 ? totalScore / weightSum : 3;
+                const finalScore = Math.max(1, Math.min(5, averageScore));
+                
+                let sentiment;
+                let confidence;
+                if (finalScore >= 4) {
+                    sentiment = 'positive';
+                    confidence = Math.min(0.95, 0.6 + (finalScore - 4) * 0.35);
+                } else if (finalScore <= 2.5) {
+                    sentiment = 'negative';
+                    confidence = Math.min(0.95, 0.6 + (2.5 - finalScore) * 0.23);
+                } else {
+                    sentiment = 'neutral';
+                    confidence = Math.max(0.5, 1 - Math.abs(finalScore - 3) * 0.3);
+                }
+
+                // Determine intensity
+                let intensity;
+                if (Math.abs(finalScore - 3) >= 1.5) intensity = 'high';
+                else if (Math.abs(finalScore - 3) >= 0.8) intensity = 'medium';
+                else intensity = 'low';
+
+                return {
+                    score: Math.round(finalScore * 10) / 10,
+                    sentiment: sentiment,
+                    confidence: Math.round(confidence * 100) / 100,
+                    emotions: emotions,
+                    keywords: foundKeywords,
+                    issues: issues,
+                    positives: positives,
+                    intensity: intensity,
+                    textLength: text.length,
+                    isDetailed: text.length > 50
+                };
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             let currentTab = 'feedback';
             const tabButtons = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
-            const tabIndicator = document.querySelector('.tab-indicator');
+            const tabIndicator = document.getElementById('tabIndicator');
             const registrationForm = document.getElementById('registrationForm');
             const consentCheckbox = document.getElementById('consentCheckbox');
             const registerBtn = document.getElementById('registerBtn');
@@ -1446,192 +1670,117 @@
             const paymentInfo = document.getElementById('paymentInfo');
             const paymentText = document.getElementById('paymentText');
             let consentGiven = false;
-            let satisfactionRating = null;
-            let recommendRating = null;
-            const sentiment = new Sentiment();
-            const commentTextarea = document.getElementById('comments');
+
+            // Initialize AI Voice Analyzer
+            const aiVoiceAnalyzer = new AIVoiceAnalyzer();
             const voiceBtn = document.getElementById('voiceBtn');
-            const voiceStatus = document.querySelector('.voice-status');
-            const aiIndicator = document.querySelector('.ai-analysis-indicator');
-            const submitBtn = document.getElementById('submitBtn');
-            const voiceUnsupported = document.querySelector('.voice-unsupported');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const aiAnalysis = document.getElementById('aiAnalysis');
+            const commentsTextarea = document.getElementById('comments');
 
-            // Speech recognition variables
-            let recognition = null;
-            let isListening = false;
-            let isVoiceSupported = false;
-            let recognitionTimeout = null;
-
-            // Initialize speech recognition
-            function initSpeechRecognition() {
-                if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    
-                    try {
-                        recognition = new SpeechRecognition();
-                        recognition.continuous = false;
-                        recognition.interimResults = true;
-                        recognition.lang = 'en-US';
-                        recognition.maxAlternatives = 1;
-                        
-                        // Test if speech recognition is actually working
-                        recognition.onaudiostart = () => {
-                            isVoiceSupported = true;
-                            voiceUnsupported.classList.remove('show');
-                        };
-
-                        recognition.onstart = () => {
-                            isListening = true;
-                            voiceBtn.classList.add('listening');
-                            voiceBtn.disabled = true;
-                            voiceStatus.textContent = 'Listening... Speak now!';
-                            voiceStatus.classList.add('show');
-                            voiceStatus.classList.remove('error');
-                            
-                            // Set a timeout to prevent infinite listening
-                            recognitionTimeout = setTimeout(() => {
-                                if (isListening) {
-                                    recognition.stop();
-                                    showVoiceStatus('Listening timeout - please try again', true);
-                                }
-                            }, 10000); // 10 second timeout
-                        };
-
-                        recognition.onresult = (event) => {
-                            let interimTranscript = '';
-                            let finalTranscript = '';
-                            
-                            for (let i = event.resultIndex; i < event.results.length; i++) {
-                                const transcript = event.results[i][0].transcript;
-                                if (event.results[i].isFinal) {
-                                    finalTranscript += transcript;
-                                } else {
-                                    interimTranscript += transcript;
-                                }
-                            }
-                            
-                            // Update textarea with final transcript, append to existing content
-                            if (finalTranscript) {
-                                const existingText = commentTextarea.value;
-                                const newText = existingText ? existingText + ' ' + finalTranscript : finalTranscript;
-                                commentTextarea.value = newText;
-                                analyzeSentiment();
-                            } else if (interimTranscript) {
-                                // Show interim results in status
-                                voiceStatus.textContent = 'Hearing: "' + interimTranscript + '"';
-                            }
-                        };
-
-                        recognition.onend = () => {
-                            isListening = false;
-                            voiceBtn.classList.remove('listening');
-                            voiceBtn.disabled = false;
-                            
-                            if (recognitionTimeout) {
-                                clearTimeout(recognitionTimeout);
-                                recognitionTimeout = null;
-                            }
-                            
-                            setTimeout(() => {
-                                voiceStatus.classList.remove('show');
-                            }, 2000);
-                            
-                            analyzeSentiment();
-                        };
-
-                        recognition.onerror = (event) => {
-                            isListening = false;
-                            voiceBtn.classList.remove('listening');
-                            voiceBtn.disabled = false;
-                            
-                            if (recognitionTimeout) {
-                                clearTimeout(recognitionTimeout);
-                                recognitionTimeout = null;
-                            }
-                            
-                            let errorMessage = 'Voice recognition error';
-                            switch(event.error) {
-                                case 'no-speech':
-                                    errorMessage = 'No speech detected - try again';
-                                    break;
-                                case 'audio-capture':
-                                    errorMessage = 'Microphone not available';
-                                    break;
-                                case 'not-allowed':
-                                    errorMessage = 'Microphone access denied';
-                                    break;
-                                case 'network':
-                                    errorMessage = 'Network error - check connection';
-                                    break;
-                                default:
-                                    errorMessage = `Voice error: ${event.error}`;
-                            }
-                            
-                            showVoiceStatus(errorMessage, true);
-                        };
-
-                        recognition.onspeechstart = () => {
-                            voiceStatus.textContent = 'Speech detected, keep talking...';
-                        };
-
-                        recognition.onspeechend = () => {
-                            voiceStatus.textContent = 'Processing speech...';
-                            voiceBtn.classList.remove('listening');
-                            voiceBtn.classList.add('processing');
-                        };
-
-                        isVoiceSupported = true;
-                        
-                    } catch (error) {
-                        console.error('Speech recognition initialization failed:', error);
-                        showVoiceUnsupported();
-                    }
+            // Voice functionality
+            voiceBtn.addEventListener('click', function() {
+                if (aiVoiceAnalyzer.isListening) {
+                    aiVoiceAnalyzer.stopListening();
+                    updateVoiceUI('idle');
+                    performAIAnalysis(commentsTextarea.value, true);
                 } else {
-                    showVoiceUnsupported();
-                }
-            }
-
-            function showVoiceStatus(message, isError = false) {
-                voiceStatus.textContent = message;
-                voiceStatus.classList.add('show');
-                voiceStatus.classList.toggle('error', isError);
-                
-                setTimeout(() => {
-                    voiceStatus.classList.remove('show');
-                    voiceStatus.classList.remove('error');
-                }, 3000);
-            }
-
-            function showVoiceUnsupported() {
-                isVoiceSupported = false;
-                voiceBtn.style.display = 'none';
-                voiceUnsupported.classList.add('show');
-            }
-
-            // Initialize speech recognition on page load
-            initSpeechRecognition();
-
-            // Voice button click handler
-            voiceBtn.addEventListener('click', () => {
-                if (!isVoiceSupported || !recognition) {
-                    showVoiceStatus('Voice recognition not available', true);
-                    return;
-                }
-
-                if (isListening) {
-                    recognition.stop();
-                    showVoiceStatus('Stopping...', false);
-                } else {
-                    try {
-                        recognition.start();
-                    } catch (error) {
-                        console.error('Failed to start speech recognition:', error);
-                        showVoiceStatus('Failed to start voice recognition', true);
-                    }
+                    startVoiceRecognition();
                 }
             });
 
-            // Tab switching
+            async function startVoiceRecognition() {
+                updateVoiceUI('processing', 'Starting recognition...');
+                const error = await aiVoiceAnalyzer.startListening();
+                if (error) {
+                    updateVoiceUI('error', error);
+                    return;
+                }
+                updateVoiceUI('listening');
+            }
+
+            function updateVoiceUI(state, message = '') {
+                voiceBtn.className = 'voice-btn';
+                voiceStatus.className = 'voice-status';
+                
+                switch (state) {
+                    case 'listening':
+                        voiceBtn.classList.add('listening');
+                        voiceBtn.title = 'Listening... Click to stop';
+                        voiceStatus.textContent = 'Listening...';
+                        voiceStatus.classList.add('show');
+                        break;
+                    case 'processing':
+                        voiceBtn.classList.add('processing');
+                        voiceBtn.title = 'Processing...';
+                        voiceStatus.textContent = message || 'Processing...';
+                        voiceStatus.classList.add('show');
+                        break;
+                    case 'success':
+                        voiceBtn.title = 'Click to speak again';
+                        voiceStatus.textContent = message || 'Success!';
+                        voiceStatus.style.color = '#27ae60';
+                        voiceStatus.classList.add('show');
+                        break;
+                    case 'error':
+                        voiceBtn.title = 'Click to try again';
+                        voiceStatus.textContent = message || 'Error occurred';
+                        voiceStatus.style.color = '#e17055';
+                        voiceStatus.classList.add('show');
+                        break;
+                    case 'idle':
+                    default:
+                        voiceBtn.title = 'Click to speak';
+                        voiceStatus.classList.remove('show');
+                        voiceStatus.style.color = '#667eea';
+                        break;
+                }
+            }
+
+            // AI Analysis functionality with enhanced voice support
+            function performAIAnalysis(text, isVoice = false, metadata = null) {
+                if (!text || text.trim().length < 10) {
+                    aiAnalysis.classList.remove('show');
+                    return;
+                }
+
+                const analysis = aiVoiceAnalyzer.analyzeSentiment(text);
+                
+                // Enhanced analysis display with confidence and service info
+                let analysisText = `${isVoice ? '🎙️ Voice' : '💭 Text'} Analysis: ${analysis.sentiment} sentiment (${analysis.score}/5)`;
+                
+                if (metadata?.confidence) {
+                    analysisText += ` - ${Math.round(metadata.confidence * 100)}% transcription confidence`;
+                }
+                
+                if (metadata?.service) {
+                    analysisText += ` via ${metadata.service}`;
+                }
+
+                aiAnalysis.innerHTML = `🤖 ${analysisText}`;
+                aiAnalysis.classList.add('show');
+
+                // Store enhanced analysis for email
+                const enhancedAnalysis = {
+                    ...analysis,
+                    transcriptionConfidence: metadata?.confidence || null,
+                    transcriptionService: metadata?.service || null,
+                    inputMethod: isVoice ? 'voice' : 'text'
+                };
+                
+                aiAnalysis.dataset.analysis = JSON.stringify(enhancedAnalysis);
+            }
+
+            // Text analysis on input
+            commentsTextarea.addEventListener('input', function() {
+                const text = this.value.trim();
+                if (text.length > 20) {
+                    performAIAnalysis(text);
+                } else {
+                    aiAnalysis.classList.remove('show');
+                }
+            });
+
             function switchTab(tabName) {
                 tabButtons.forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.tab === tabName);
@@ -1641,7 +1790,13 @@
                     content.classList.toggle('active', content.id === `${tabName}Tab`);
                 });
 
-                tabIndicator.style.left = tabName === 'feedback' ? '6px' : 'calc(50% + 6px)';
+                const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+                const containerRect = activeBtn.parentElement.getBoundingClientRect();
+                const btnRect = activeBtn.getBoundingClientRect();
+                
+                const leftOffset = btnRect.left - containerRect.left - 6;
+                tabIndicator.style.transform = `translateX(${leftOffset}px)`;
+
                 currentTab = tabName;
 
                 if (navigator.vibrate) {
@@ -1649,38 +1804,16 @@
                 }
             }
 
-            setTimeout(() => switchTab('feedback'), 100);
+            setTimeout(() => {
+                switchTab('feedback');
+            }, 100);
 
             tabButtons.forEach(btn => {
-                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+                btn.addEventListener('click', () => {
+                    switchTab(btn.dataset.tab);
+                });
             });
 
-            // Sentiment analysis
-            function analyzeSentiment() {
-                if (!commentTextarea.value.trim()) {
-                    aiIndicator.classList.remove('show');
-                    return;
-                }
-
-                aiIndicator.classList.add('show');
-                aiIndicator.textContent = '🤖 AI analyzing sentiment...';
-
-                setTimeout(() => {
-                    const analysis = sentiment.analyze(commentTextarea.value);
-                    let sentimentLabel = 'Neutral';
-                    if (analysis.score > 0) sentimentLabel = 'Positive';
-                    if (analysis.score < 0) sentimentLabel = 'Negative';
-                    
-                    const positiveWords = analysis.positive.length > 0 ? analysis.positive.join(', ') : 'none';
-                    const negativeWords = analysis.negative.length > 0 ? analysis.negative.join(', ') : 'none';
-                    
-                    aiIndicator.textContent = `🤖 Sentiment: ${sentimentLabel} (Score: ${analysis.score}) | Positive: ${positiveWords} | Negative: ${negativeWords}`;
-                }, 1000);
-            }
-
-            commentTextarea.addEventListener('input', analyzeSentiment);
-
-            // Registration form handling
             if (payorSelect) {
                 payorSelect.addEventListener('change', function() {
                     const selectedPayor = this.value;
@@ -1714,9 +1847,11 @@
             window.toggleConsent = function() {
                 consentGiven = !consentGiven;
                 consentCheckbox.classList.toggle('checked', consentGiven);
+                
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
                 }
+                
                 validateRegistrationForm();
             }
 
@@ -1728,41 +1863,15 @@
                 const dateOfBirth = document.getElementById('dateOfBirth').value;
                 const gender = document.getElementById('gender').value;
                 const address = document.getElementById('address').value.trim();
-                const payor = payorSelect.value;
-                const hmoId = hmoIdInput.value.trim();
+                const payor = payorSelect ? payorSelect.value : '';
+                const hmoId = document.getElementById('hmoId').value.trim();
+
                 const hmoOptions = ['aiico', 'anchor', 'axamansard', 'bastion', 'clearline', 'hygeia', 'leadway', 'nem', 'phillips', 'reliance', 'tht'];
                 const hmoIdValid = !hmoOptions.includes(payor) || (hmoOptions.includes(payor) && hmoId);
 
                 const isValid = firstName && lastName && maritalStatus && phone && dateOfBirth && gender && address && payor && consentGiven && hmoIdValid;
+
                 registerBtn.disabled = !isValid;
-
-                ['firstName', 'lastName', 'maritalStatus', 'phone', 'dateOfBirth', 'gender', 'address'].forEach(id => {
-                    const element = document.getElementById(id);
-                    const error = element.nextElementSibling;
-                    if (element.value.trim() === '') {
-                        element.classList.add('error');
-                        if (error) error.style.display = 'block';
-                    } else {
-                        element.classList.remove('error');
-                        if (error) error.style.display = 'none';
-                    }
-                });
-
-                if (payor === '') {
-                    payorSelect.classList.add('error');
-                    if (payorSelect.nextElementSibling) payorSelect.nextElementSibling.style.display = 'block';
-                } else {
-                    payorSelect.classList.remove('error');
-                    if (payorSelect.nextElementSibling) payorSelect.nextElementSibling.style.display = 'none';
-                }
-
-                if (hmoOptions.includes(payor) && !hmoId) {
-                    hmoIdInput.classList.add('error');
-                    if (hmoIdInput.nextElementSibling) hmoIdInput.nextElementSibling.style.display = 'block';
-                } else {
-                    hmoIdInput.classList.remove('error');
-                    if (hmoIdInput.nextElementSibling) hmoIdInput.nextElementSibling.style.display = 'none';
-                }
             }
 
             ['firstName', 'lastName', 'middleName', 'maritalStatus', 'phone', 'dateOfBirth', 'gender', 'address', 'hmoId'].forEach(id => {
@@ -1773,7 +1882,9 @@
                 }
             });
 
-            payorSelect.addEventListener('change', validateRegistrationForm);
+            if (payorSelect) {
+                payorSelect.addEventListener('change', validateRegistrationForm);
+            }
 
             document.getElementById('phone').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -1785,7 +1896,6 @@
                     value = '+234' + value;
                 }
                 e.target.value = value;
-                validateRegistrationForm();
             });
 
             document.getElementById('dateOfBirth').addEventListener('change', function(e) {
@@ -1799,14 +1909,13 @@
                 } else {
                     dateInput.dataset.formattedValue = '';
                 }
-                validateRegistrationForm();
             });
 
             registrationForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if (registerBtn.disabled) return;
 
-                const selectedPayor = payorSelect.value;
+                const selectedPayor = payorSelect ? payorSelect.value : '';
                 const dateOfBirthInput = document.getElementById('dateOfBirth');
 
                 const registrationData = {
@@ -1832,7 +1941,7 @@
                 updateSuccessMessage(selectedPayor);
 
                 setTimeout(() => {
-                    registrationForm.style.display = 'none';
+                    document.getElementById('registrationForm').style.display = 'none';
                     document.getElementById('registrationSuccess').style.display = 'block';
                 }, 1500);
             });
@@ -1884,15 +1993,20 @@
                 };
 
                 emailjs.send('service_vmknsar', 'template_2f4o2a9', templateParams)
-                    .then(response => {
+                    .then(function(response) {
                         console.log('Registration email sent successfully!', response.status, response.text);
-                    }, error => {
-                        console.error('Registration email failed to send:', error);
-                        alert('Failed to send registration. Please try again.');
+                    }, function(error) {
+                        console.log('Registration email failed to send:', error);
                     });
             }
 
-            // Feedback form handling
+            let satisfactionRating = null;
+            let recommendRating = null;
+
+            function updateProgress() {
+                // Progress dots removed, function left empty
+            }
+
             document.querySelectorAll('.rating-option').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const container = this.parentElement;
@@ -1916,58 +2030,82 @@
                         navigator.vibrate([50, 20, 80]);
                     }
 
+                    updateProgress();
                     updateSubmitButton();
                 });
             });
 
             function updateSubmitButton() {
-                submitBtn.disabled = satisfactionRating === null || recommendRating === null;
+                const submitBtn = document.getElementById('submitBtn');
+                if (satisfactionRating !== null && recommendRating !== null) {
+                    submitBtn.disabled = false;
+                }
             }
 
-            document.getElementById('surveyForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (submitBtn.disabled) return;
-
+            document.getElementById('submitBtn').addEventListener('click', function() {
                 const patientName = document.getElementById('patientName').value.trim();
                 const patientContact = document.getElementById('patientContact').value.trim();
-                const comments = commentTextarea.value.trim();
+                const comments = document.getElementById('comments').value;
                 const timestamp = new Date().toISOString();
 
-                const analysis = sentiment.analyze(comments);
-                const sentimentText = `Sentiment: ${analysis.score >= 0 ? 'Positive' : 'Negative'} (Score: ${analysis.score}, Positive words: ${analysis.positive.join(', ')}, Negative words: ${analysis.negative.join(', ')})`;
+                // Get AI analysis if available
+                let aiAnalysisData = null;
+                try {
+                    if (aiAnalysis.dataset.analysis) {
+                        aiAnalysisData = JSON.parse(aiAnalysis.dataset.analysis);
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse AI analysis data:', e);
+                }
 
                 const feedbackData = {
                     satisfaction: satisfactionRating,
                     recommendation: recommendRating,
                     patientName: patientName || 'Anonymous Hero',
                     patientContact: patientContact || 'Not provided',
-                    comments: comments || 'No additional comments provided',
-                    sentimentAnalysis: sentimentText,
+                    comments: comments,
                     timestamp: timestamp,
                     userAgent: navigator.userAgent,
-                    hospital: 'Magodo Specialist Hospital'
+                    hospital: 'Magodo Specialist Hospital',
+                    aiAnalysis: aiAnalysisData
                 };
 
+                submitFeedback(feedbackData);
+            });
+
+            function submitFeedback(data) {
+                const submitBtn = document.getElementById('submitBtn');
+                
                 submitBtn.innerHTML = '<span style="opacity: 0.7">🚀 Sending Feedback...</span>';
                 submitBtn.disabled = true;
 
-                sendFeedbackEmail(feedbackData);
+                sendFeedbackEmail(data);
 
                 setTimeout(() => {
                     document.getElementById('surveyForm').style.display = 'none';
                     document.getElementById('thankYou').style.display = 'block';
                 }, 1500);
-            });
+            }
 
             function sendFeedbackEmail(data) {
                 const satisfactionLabels = ['', 'Very Poor', 'Poor', 'Fair', 'Good', 'Excellent'];
                 const recommendLabels = ['', 'Never', 'Unlikely', 'Maybe', 'Likely', 'Definitely'];
 
-                const overallScore = (
-                    (data.satisfaction * 0.4) +
-                    (data.recommendation * 0.4) +
-                    (sentiment.analyze(data.comments).score * 0.2)
-                ).toFixed(1);
+                // Enhanced analysis combining manual ratings and AI analysis
+                let textAnalysis = null;
+                let overallScore = (data.satisfaction * 0.5) + (data.recommendation * 0.5);
+                
+                if (data.aiAnalysis) {
+                    textAnalysis = data.aiAnalysis;
+                    // Weight AI analysis at 30% if available
+                    overallScore = (data.satisfaction * 0.35) + (data.recommendation * 0.35) + (textAnalysis.score * 0.3);
+                } else if (data.comments) {
+                    // Fallback to basic analysis
+                    textAnalysis = aiVoiceAnalyzer.analyzeSentiment(data.comments);
+                    overallScore = (data.satisfaction * 0.4) + (data.recommendation * 0.4) + (textAnalysis.score * 0.2);
+                }
+
+                overallScore = overallScore.toFixed(1);
 
                 let priority = 'Normal';
                 let priorityEmoji = '🟡';
@@ -1980,29 +2118,71 @@
                     priorityEmoji = '🟢';
                 }
 
+                let analysisDetails = `ENHANCED AI ANALYSIS:
+• Overall Score: ${overallScore}/5.0
+• Priority Level: ${priority} ${priorityEmoji}`;
+
+                if (textAnalysis) {
+                    analysisDetails += `
+• AI Sentiment: ${textAnalysis.sentiment.charAt(0).toUpperCase() + textAnalysis.sentiment.slice(1)} (${textAnalysis.score}/5)
+• Confidence Level: ${Math.round(textAnalysis.confidence * 100)}%
+• Emotional Intensity: ${textAnalysis.intensity}
+• Text Length: ${textAnalysis.textLength} characters`;
+
+                    if (textAnalysis.issues && textAnalysis.issues.length > 0) {
+                        analysisDetails += `\n• Issues Identified: ${textAnalysis.issues.join(', ')}`;
+                    }
+
+                    if (textAnalysis.positives && textAnalysis.positives.length > 0) {
+                        analysisDetails += `\n• Positive Aspects: ${textAnalysis.positives.join(', ')}`;
+                    }
+
+                    if (textAnalysis.keywords && textAnalysis.keywords.length > 0) {
+                        analysisDetails += `\n• Key Terms: ${textAnalysis.keywords.join(', ')}`;
+                    }
+
+                    if (textAnalysis.emotions) {
+                        const emotionSummary = Object.keys(textAnalysis.emotions)
+                            .filter(key => textAnalysis.emotions[key] > 0)
+                            .map(key => `${key}: ${textAnalysis.emotions[key].toFixed(1)}`)
+                            .join(', ');
+                        if (emotionSummary) {
+                            analysisDetails += `\n• Emotion Analysis: ${emotionSummary}`;
+                        }
+                    }
+                }
+
                 const templateParams = {
-                    hospital_name: data.hospital,
+                    hospital_name: 'Magodo Specialist Hospital',
                     patient_name: data.patientName,
                     patient_contact: data.patientContact,
                     satisfaction_rating: `${satisfactionLabels[data.satisfaction]} (${data.satisfaction}/5)`,
                     recommendation_score: `${recommendLabels[data.recommendation]} (${data.recommendation}/5)`,
-                    comments: data.comments,
-                    sentiment_analysis: data.sentimentAnalysis,
+                    comments: data.comments || 'No additional comments provided',
                     timestamp: new Date(data.timestamp).toLocaleString(),
                     overall_score: `${overallScore}/5.0`,
-                    priority_level: `${priority} ${priorityEmoji}`
+                    priority_level: `${priority} ${priorityEmoji}`,
+                    sentiment: textAnalysis ? textAnalysis.sentiment.charAt(0).toUpperCase() + textAnalysis.sentiment.slice(1) : 'Not analyzed',
+                    text_score: textAnalysis ? `${textAnalysis.score}/5` : 'N/A',
+                    analysis_details: analysisDetails,
+                    issues_found: textAnalysis && textAnalysis.issues && textAnalysis.issues.length > 0 ? textAnalysis.issues.join(', ') : 'None',
+                    positives_found: textAnalysis && textAnalysis.positives && textAnalysis.positives.length > 0 ? textAnalysis.positives.join(', ') : 'None',
+                    ai_confidence: textAnalysis ? `${Math.round(textAnalysis.confidence * 100)}%` : 'N/A'
                 };
 
                 emailjs.send('service_vmknsar', 'template_2wpah22', templateParams)
-                    .then(response => {
-                        console.log('Feedback email sent successfully!', response.status, response.text);
-                    }, error => {
-                        console.error('Feedback email failed to send:', error);
-                        alert('Failed to send feedback. Please try again.');
+                    .then(function(response) {
+                        console.log('Enhanced feedback email sent successfully!', response.status, response.text);
+                        if (textAnalysis) {
+                            console.log('AI Analysis Results:', textAnalysis);
+                        }
+                        console.log('Overall Score:', overallScore);
+                    }, function(error) {
+                        console.log('Feedback email failed to send:', error);
                     });
             }
 
-            // Konami code easter egg
+            // Konami code Easter egg
             let konamiCode = [];
             const konamiSequence = [
                 'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
@@ -2018,7 +2198,7 @@
                     document.body.style.animation = 'rainbow 2s infinite';
                     document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffd93d, #6c5ce7)';
                     document.body.style.backgroundSize = '400% 400%';
-
+                    
                     setTimeout(() => {
                         document.body.style.animation = '';
                         document.body.style.background = '#f5f6f5';
@@ -2030,99 +2210,23 @@
                 }
             });
 
-            // Add rainbow animation styles
-            const rainbowStyle = document.createElement('style');
-            rainbowStyle.textContent = `
-                @keyframes rainbow {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-                }
-            `;
-            document.head.appendChild(rainbowStyle);
-
-            // Sparkle effect on clicks
+            // Sparkle click effect
             document.addEventListener('click', function(e) {
-                if (e.target.closest('.voice-btn') || e.target.closest('.submit-btn') || e.target.closest('.rating-option')) {
-                    const sparkle = document.createElement('div');
-                    sparkle.innerHTML = '✨';
-                    sparkle.style.position = 'fixed';
-                    sparkle.style.left = e.clientX + 'px';
-                    sparkle.style.top = e.clientY + 'px';
-                    sparkle.style.pointerEvents = 'none';
-                    sparkle.style.fontSize = '20px';
-                    sparkle.style.zIndex = '9999';
-                    sparkle.style.animation = 'sparkleFloat 1s ease-out';
-                    document.body.appendChild(sparkle);
+                const sparkle = document.createElement('div');
+                sparkle.innerHTML = '✨';
+                sparkle.style.position = 'fixed';
+                sparkle.style.left = e.clientX + 'px';
+                sparkle.style.top = e.clientY + 'px';
+                sparkle.style.pointerEvents = 'none';
+                sparkle.style.fontSize = '20px';
+                sparkle.style.zIndex = '9999';
+                sparkle.style.animation = 'sparkleFloat 1s ease-out';
+                document.body.appendChild(sparkle);
 
-                    setTimeout(() => {
-                        sparkle.remove();
-                    }, 1000);
-                }
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1000);
             });
-
-            // Sparkle animation styles
-            const sparkleStyle = document.createElement('style');
-            sparkleStyle.textContent = `
-                @keyframes sparkleFloat {
-                    0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-                    100% { opacity: 0; transform: translateY(-50px) scale(0.5) rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(sparkleStyle);
-
-            // Accessibility improvements
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    if (e.target.classList.contains('rating-option')) {
-                        e.preventDefault();
-                        e.target.click();
-                    } else if (e.target.classList.contains('custom-checkbox')) {
-                        e.preventDefault();
-                        toggleConsent();
-                    }
-                }
-            });
-
-            // Form validation improvements
-            document.querySelectorAll('.form-input, .form-select').forEach(input => {
-                input.addEventListener('blur', function() {
-                    if (this.hasAttribute('required') && !this.value.trim()) {
-                        this.classList.add('error');
-                        if (this.nextElementSibling && this.nextElementSibling.classList.contains('error-message')) {
-                            this.nextElementSibling.style.display = 'block';
-                        }
-                    }
-                });
-
-                input.addEventListener('focus', function() {
-                    this.classList.remove('error');
-                    if (this.nextElementSibling && this.nextElementSibling.classList.contains('error-message')) {
-                        this.nextElementSibling.style.display = 'none';
-                    }
-                });
-            });
-
-            // Improve voice button accessibility
-            voiceBtn.setAttribute('aria-label', 'Voice input for comments');
-            voiceBtn.setAttribute('title', 'Click to start voice input');
-            
-            // Update voice button state for screen readers
-            function updateVoiceButtonState() {
-                if (isListening) {
-                    voiceBtn.setAttribute('aria-label', 'Stop voice input');
-                    voiceBtn.setAttribute('title', 'Click to stop voice input');
-                } else {
-                    voiceBtn.setAttribute('aria-label', 'Start voice input');
-                    voiceBtn.setAttribute('title', 'Click to start voice input');
-                }
-            }
-
-            // Update voice button state when recognition state changes
-            if (recognition) {
-                recognition.addEventListener('start', updateVoiceButtonState);
-                recognition.addEventListener('end', updateVoiceButtonState);
-            }
         });
     </script>
 </body>
